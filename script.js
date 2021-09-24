@@ -1,7 +1,10 @@
 async function chartingDots(){
     let data = await d3.csv('cities.csv', d3.autotype);
     console.log("european cities", data)
+    
     /* Filter the data */
+    const nonEurope = ['New Zealand', 'USA', 'Japan']
+    data = data.filter(d => !nonEurope.includes(d.country));
 
     /* Display the number of European Cities */
     d3.select('.city-count').text("Number of Cities: " + data.length)
@@ -9,7 +12,7 @@ async function chartingDots(){
     const width = 700;
     const height = 550;
     const svg = d3.select('.population-plot')
-		.append('svg')
+        .append('svg')
         .attr('width', width)
         .attr('height', height)
 
@@ -27,7 +30,7 @@ async function chartingDots(){
                 return 8
             }
         })
-        .style("fill", "#69b3a2")
+        .style("fill", "#ffb4a2")
     
     let dataText = svg.selectAll("text")
         .data(data)
@@ -49,76 +52,80 @@ async function chartingDots(){
 }
 
 chartingDots();
-
+    
 async function chartingBars(){
-    let data = await d3.csv('buildings.csv', d3.autotype);
-    console.log("buildings", data)
+    let data = await d3.csv('buildings.csv', d3.autoType);
+    console.log(data);
 
-    //sort the dataset based on building height
     data.sort(function (a, b) {
         return b.height_px - a.height_px;
     });
 
-    const width = 500;
-    const height = 500;
-    const svg = d3.select('.bar-chart')
-		.append('svg')
-        .attr('width', width)
-        .attr('height', height)
 
-    let bars = svg.selectAll("rect")
+    const svg = d3.select('.bar-chart')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+
+    var rectangle = svg.selectAll(".bar")
         .data(data)
         .enter()
         .append("rect")
-        .attr('x', 250)
-        .attr('y', function(d, i) { return i * 50 + 5 }) // space them evenly vertically
+        .attr("class", "bar")
+        .attr("x", 180)
+        .attr('y', function(d, i) { 
+            return i * 50 + 5 // space them evenly vertically
+        }) 
         .attr('height', 40)
-        .attr('width', function(d) { return (d.height_px); })
+        .attr('width', function(d) { 
+            return (d.height_px) 
+        })
         .on("click", function(event, d) {
             d3.select('.building-name')
-            .append("text")
             .text(d.building)
             d3.select(".image")
             .attr("src", "img/"+d.image)
-            d3.select('.height')
-            .append("text")
+            d3.select(".building-name")
+            .text(d.building)
+            d3.select(".height")
             .text(d.height_ft)
-            d3.select('.city')
-            .append("text")
+            d3.select(".city")
             .text(d.city)
-            d3.select('.country')
-            .append("text")
+            d3.select(".country")
             .text(d.country)
-            d3.select('.floors')
-            .append("text")
+            d3.select(".floors")
             .text(d.floors)
-            d3.select('.completed')
-            .append("text")
+            d3.select(".completed")
             .text(d.completed)
-        })
+        })
+        .attr("fill", "#b5838d");
 
-    let textBuildings = svg.selectAll("text")
+    var buildingNames = svg.selectAll(".buildingNames")
         .data(data)
         .enter()
         .append("text")
-        .text(function(d) {
+        .attr("class", "buildingNames")
+        .text(function(d){
             return d.building;
         })
-        .attr('x', 0)
-        .attr('y', function(d, i) { return i * 50  + 30})
-    
-    let textHeights = svg.selectAll("text")
+        .attr('x',0)
+        .attr('y', function(d,i){ return i * 50 + 30})
+        .attr("font-size", 12)
+
+    let textHeights = svg.selectAll(".buildingHeight")
         .data(data)
         .enter()
         .append("text")
-        .text(function(d) {
-            return d.height_px
+        .attr("class", "buildingHeight")
+        .text(function(d){
+            return d.height_ft
         })
-        .attr('x', function(d) { return (d.height_px)})
-        .attr('y', 20)
+        .attr('x', function(d){ return 180 + d.height_px - 5})
+        .attr('y', function(d, i){ return i * 50 +30})
         .attr("text-anchor", "end")
-        .attr("fill", "white");
+        .attr("fill", "white")
+        .attr("font-size", 12)
 
 }
-
+    
 chartingBars();
